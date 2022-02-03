@@ -73,139 +73,51 @@ class Clients
     private $phone;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Books::class, mappedBy="Clients")
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Books", mappedBy="clients")
      */
-    private $Books;
+    private $books;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Borrow::class, mappedBy="clients")
+     */
+    private $borrows;
+
+    /**
+     * Constructor
+     */
     public function __construct()
     {
-        $this->Books = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    public function getBirthDate(): ?\DateTimeInterface
-    {
-        return $this->birthDate;
-    }
-
-    public function setBirthDate(\DateTimeInterface $birthDate): self
-    {
-        $this->birthDate = $birthDate;
-
-        return $this;
-    }
-
-    public function getAdress(): ?string
-    {
-        return $this->adress;
-    }
-
-    public function setAdress(string $adress): self
-    {
-        $this->adress = $adress;
-
-        return $this;
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    public function setCity(string $city): self
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    public function getMail(): ?string
-    {
-        return $this->mail;
-    }
-
-    public function setMail(string $mail): self
-    {
-        $this->mail = $mail;
-
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(string $phone): self
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    public function toArray()
-    {
-        return [
-        'id' => $this->getId(),
-        'firstName' => $this->getFirstName(),
-        'lastName' => $this->getLastName(),
-        'birthDate' => $this->getBirthdate(),
-        'adress' => $this->getAdress(),
-        'email' => $this->getMail(),
-        'phoneNumber' => $this->getPhone()
-        ];
+        $this->books = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->borrows = new ArrayCollection();
     }
 
     /**
-     * @return Collection|Books[]
+     * @return Collection|Borrow[]
      */
-    public function getBooks(): Collection
+    public function getBorrows(): Collection
     {
-        return $this->Books;
+        return $this->borrows;
     }
 
-    public function addBook(Books $book): self
+    public function addBorrow(Borrow $borrow): self
     {
-        if (!$this->Books->contains($book)) {
-            $this->Books[] = $book;
-            $book->addClient($this);
+        if (!$this->borrows->contains($borrow)) {
+            $this->borrows[] = $borrow;
+            $borrow->setClients($this);
         }
 
         return $this;
     }
 
-    public function removeBook(Books $book): self
+    public function removeBorrow(Borrow $borrow): self
     {
-        if ($this->Books->removeElement($book)) {
-            $book->removeClient($this);
+        if ($this->borrows->removeElement($borrow)) {
+            // set the owning side to null (unless already changed)
+            if ($borrow->getClients() === $this) {
+                $borrow->setClients(null);
+            }
         }
 
         return $this;
