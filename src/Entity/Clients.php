@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -69,6 +71,16 @@ class Clients
      * @ORM\Column(name="phone", type="string", length=15, nullable=false)
      */
     private $phone;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Books::class, mappedBy="Clients")
+     */
+    private $Books;
+
+    public function __construct()
+    {
+        $this->Books = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -170,6 +182,33 @@ class Clients
         'email' => $this->getMail(),
         'phoneNumber' => $this->getPhone()
         ];
+    }
+
+    /**
+     * @return Collection|Books[]
+     */
+    public function getBooks(): Collection
+    {
+        return $this->Books;
+    }
+
+    public function addBook(Books $book): self
+    {
+        if (!$this->Books->contains($book)) {
+            $this->Books[] = $book;
+            $book->addClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBook(Books $book): self
+    {
+        if ($this->Books->removeElement($book)) {
+            $book->removeClient($this);
+        }
+
+        return $this;
     }
 
 }
