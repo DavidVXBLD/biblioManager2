@@ -29,14 +29,14 @@
         <a class="btn btn-primary my-2" href="./create">{{'Create book'}}</a>
         <table id="myTable" class="display">
             <thead>
-                <th>{{"Title"}}</th>
-                <th>{{"Author"}}</th>
-                <th>{{"Summary"}}</th>
-                <th>{{"Release_Date"}}</th>
-                <th>{{"Category"}}</th>
-                <th>{{"ForChild"}}</th>
-                <th>{{"Available"}}</th>
-                <th>{{"Client"}}</th>
+                <th>{{"Titre"}}</th>
+                <th>{{"Auteur"}}</th>
+                <th>{{"Résumé"}}</th>
+                <th>{{"Date de parution"}}</th>
+                <th>{{"Categorie"}}</th>
+                <th>{{"Child Friendly"}}</th>
+                <th>{{"Disponible"}}</th>
+                <th>{{"Emprunteur"}}</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -49,10 +49,28 @@
                     <td>{{book.getSummary()}}</td>
                     <td>{{book.getReleaseDate()|date("d-M-Y","Europe/Paris")}}</td>
                     <td>{{book.getCategory()}}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{% if book.getForChild() %}
+								Oui
+							{% else %}
+								Non
+							{% endif %}</td>
+                    <td>{% if book.getAvailable() %}
+								Non
+							{% else %}
+								Oui
+							{% endif %}</td>
+                    <td>{% if book.getAvailable() %}
+								{% for borrow in book.getBorrows() %}
+                                    {{borrow.getClients().getFirstName()}}
+                                {% endfor %}
+							{% else %}
+                                Aucun
+							{% endif %}</td>
+                    <td>{% if book.getAvailable() %}
+								<button class="btn btn-primary disabled">{{'Borrow'}}</button>
+							{% else %}
+								<a class="btn btn-primary" href="./borrow/{{book.getId()}}">{{'Borrow'}}</a>
+							{% endif %}</td>
                     <td><a class="btn btn-success" href="./edit/{{book.getId()}}">{{'Edit'}}</a></td>
                     <td><a class="btn btn-danger" href="./delete/{{book.getId()}}">{{'Delete'}}</a></td>
                 </tr>
