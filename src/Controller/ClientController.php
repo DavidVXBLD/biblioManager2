@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Clients;
+use App\Entity\Borrow;
 use App\Form\ClientType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,6 +31,18 @@ class ClientController extends AbstractController
         return $this->render('client/listing.html.twig', [
             'controller_name' => 'clientController',
             'clients' => $clients
+        ]);
+    }
+
+    #[Route('/client/details/{id}', name: 'client_details')]
+    public function showClient(ManagerRegistry $registry, int $id): Response
+    {
+        $clients = $registry->getRepository(Clients::class)->findOneBy(["id" => $id]);
+        $borrowed = $registry->getRepository(Borrow::class)->findBy(["clients" => $clients, "date_rendered" => null]);
+        return $this->render('client/details.html.twig', [
+            'controller_name' => 'client Detail',
+            'clients' => $clients,
+            'bookList' => $borrowed
         ]);
     }
 
@@ -79,7 +92,7 @@ class ClientController extends AbstractController
     }
 
     #[Route('/client/delete/{id}', name: 'client_delete')]
-    public function deleteclient(ManagerRegistry $doctrine, Request $request, int $id): Response
+    public function deleteclient(ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
         $client = $entityManager->getRepository(Clients::class)->find($id);

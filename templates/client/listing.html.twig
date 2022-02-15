@@ -13,7 +13,7 @@
     <style>
     .example-wrapper {
         margin: 1em auto;             
-        max-width: 70vw;             
+        max-width: 85vw;             
         width: 95%;             
         font: 18px / 1.5 sans-serif;         
         }         
@@ -29,13 +29,13 @@
         <a class="btn btn-primary my-2" href="./create">{{'Create client'}}</a>
         <table id="myTable" class="display">
             <thead>
-                <th>{{"firstName"}}</th>
-                <th>{{"lastName"}}</th>
-                <th>{{"birthDate"}}</th>
-                <th>{{"adress"}}</th>
-                <th>{{"city"}}</th>
-                <th>{{"mail"}}</th>
-                <th>{{"phone"}}</th>
+                <th>{{"Firstname"}}</th>
+                <th>{{"Lastname"}}</th>
+                <th>{{"Birth date"}}</th>
+                <th>{{"Address"}}</th>
+                <th>{{"City"}}</th>
+                <th>{{"Email"}}</th>
+                <th>{{"Phone n°"}}</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -45,12 +45,12 @@
                 <tr>
                     <td>{{client.getFirstName()}}</td>
                     <td>{{client.getLastName()}}</td>
-                    <td>{{client.getBirthDate()|date("d-M-Y","Europe/Paris")}}</td>
+                    <td>{{client.getBirthDate()|date("Y-m-d","Europe/Paris")}}</td>
                     <td>{{client.getAdress()}}</td>
                     <td>{{client.getCity()}}</td>
                     <td>{{client.getMail()}}</td>
                     <td>{{client.getPhone()}}</td>
-                    <td></td>
+                    <td><a class="btn btn-primary" href={{path("client_details", {id : client.getId()})}}>{{'Details'}}</a></td>
                     <td><a class="btn btn-success" href="./edit/{{client.getId()}}">{{'Edit'}}</a></td>
                     <td><a class="btn btn-danger" href="./delete/{{client.getId()}}">{{'Delete'}}</a></td>
                 </tr>

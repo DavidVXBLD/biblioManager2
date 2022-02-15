@@ -18,9 +18,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class BookController extends AbstractController
 {
     #[Route('/book', name: 'book')]
-    public function index(ManagerRegistry $doctrine): Response
+    public function index(): Response
     {
-        
+        return $this->render('book/index.html.twig', [
+            'controller_name' => 'ClientController',
+        ]);
     }
 
     #[Route('/book/listing', name: 'book_listing')]
@@ -130,5 +132,20 @@ class BookController extends AbstractController
         return $this->renderForm('book/borrow.html.twig', [
             'form' => $form
         ]);
+    }
+
+    #[Route('/book/return/{id}', name: 'book_return')]
+    public function returnBook(ManagerRegistry $doctrine, int $id): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $book = $entityManager->getRepository(Books::class)->find($id);
+        $borrow = $entityManager->getRepository(Borrow::class)->find($id);
+        
+        $book->setAvailable(0);
+        $borrow->setDateRenderedMax(new \DateTime("now"));
+
+        $entityManager->persist($book, $borrow);
+        $entityManager->flush();
+        return $this->redirectToRoute('book_listing');
     }
 }
