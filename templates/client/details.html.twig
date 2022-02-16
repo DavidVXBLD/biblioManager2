@@ -43,7 +43,7 @@
             </tr>        
     </table>
     <br>
-    {% if bookList|length > 0%}
+    {# {% if borrowList|length > 0%} #}
     <h2 class="fs-1 fw-bold">{{'Borrowed book by'}} {{clients.getFirstName()}}</h2>
     <br>
     <table id="myTable" class=" table display fs-3">
@@ -54,24 +54,22 @@
             <th></th>
         </thead>
         <tbody>
-        {% for book in bookList %}
+        {% for borrow in borrowList %}
             <tr>
-                <td>{{book.getBooks().getTitle()}}</td>
-                <td>{{book.getBooks().getAuthor()}}</td>
-                <td>{{book.getBooks().getCategory()}}</td>
-                <td>{% if book.getBooks().getAvailable() %}
-                        <a class="btn btn-primary" href={{path("book_return", {id : book.getId()})}}>{{'Return'}}</a>
+                <td>{{borrow.getBooks().getTitle()}}</td>
+                <td>{{borrow.getBooks().getAuthor()}}</td>
+                <td>{{borrow.getBooks().getCategory()}}</td>
+                <td>{% if borrow.getBooks().getAvailable() %}
+                        <a class="btn btn-primary" href={{path("book_return", {id : borrow.getBooks().getId()})}}>{{'Return'}}</a>
                     {% else %}
-                        {% for borrow in book.getBorrows() %}
-                            {{borrow.getDateRendered()}}
-                        {% endfor %}
+                        {{borrow.getDateRendered()}}   
                     {% endif %}
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-    {% endif %}
+    {# {% endif %} #}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

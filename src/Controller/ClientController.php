@@ -39,10 +39,11 @@ class ClientController extends AbstractController
     {
         $clients = $registry->getRepository(Clients::class)->findOneBy(["id" => $id]);
         $borrowed = $registry->getRepository(Borrow::class)->findBy(["clients" => $clients, "date_rendered" => null]);
+        
         return $this->render('client/details.html.twig', [
             'controller_name' => 'client Detail',
             'clients' => $clients,
-            'bookList' => $borrowed
+            'borrowList' => $borrowed
         ]);
     }
 

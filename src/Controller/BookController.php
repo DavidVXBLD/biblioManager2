@@ -81,7 +81,7 @@ class BookController extends AbstractController
     }
 
     #[Route('/book/delete/{id}', name: 'book_delete')]
-    public function deleteBook(ManagerRegistry $doctrine, Request $request, int $id): Response
+    public function deleteBook(ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
         $book = $entityManager->getRepository(Books::class)->find($id);
@@ -119,7 +119,7 @@ class BookController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $update = $form->getData();
             
-            $book->setAvailable(1);
+            $book->setAvailable(Books::BORROWED);
 
             $borrow->setClients($update->getClients());
 
@@ -137,12 +137,14 @@ class BookController extends AbstractController
     #[Route('/book/return/{id}', name: 'book_return')]
     public function returnBook(ManagerRegistry $doctrine, int $id): Response
     {
+
         $entityManager = $doctrine->getManager();
         $book = $entityManager->getRepository(Books::class)->find($id);
         $borrow = $entityManager->getRepository(Borrow::class)->find($id);
         
-        $book->setAvailable(0);
-        $borrow->setDateRenderedMax(new \DateTime("now"));
+
+        $book->setAvailable(Books::AVAILABLE);
+        $borrow->setDateRendered(new \DateTime("now"));
 
         $entityManager->persist($book, $borrow);
         $entityManager->flush();

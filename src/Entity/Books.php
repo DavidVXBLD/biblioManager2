@@ -14,6 +14,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Books
 {
+
+    const AVAILABLE = false;
+
+    const BORROWED = true;
+
     /**
      * @var int
      *
@@ -68,7 +73,7 @@ class Books
     /**
      * @var bool|null
      *
-     * @ORM\Column(name="available", type="boolean", nullable=true)
+     * @ORM\Column(name="available", type="boolean", nullable=false)
      */
     private $available;
 
