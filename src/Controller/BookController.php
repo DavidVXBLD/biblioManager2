@@ -43,7 +43,6 @@ class BookController extends AbstractController
         $book = new Books();
 
         $form = $this->createForm(BookType::class, $book);
-        $form->add("submit",SubmitType::class,["attr" => ["class" => "btn btn-primary"]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $book = $form->getData();
@@ -65,8 +64,7 @@ class BookController extends AbstractController
         $entityManager = $doctrine->getManager();
         $book = $entityManager->getRepository(Books::class)->find($id);
 
-        $form = $this->createForm(BookType::class,$book);
-        $form->add("submit",SubmitType::class,["attr" => ["class" => "btn btn-primary"]]);
+        $form = $this->createForm(BookType::class, $book);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $book = $form->getData();
@@ -74,7 +72,7 @@ class BookController extends AbstractController
             $entityManager->flush();
             return $this->redirectToRoute('book_listing');
         }
-        return $this->renderForm('book/create.html.twig', [
+        return $this->renderForm('book/edit.html.twig', [
             'controller_name' => 'Edit Book',
             'form' => $form
         ]);
@@ -85,40 +83,45 @@ class BookController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $book = $entityManager->getRepository(Books::class)->find($id);
+
+        $borrow = $entityManager->getRepository(Borrow::class)->findBy(["books" => $id]);
+        foreach ($borrow as $delete) {
+            $entityManager->remove($delete);
+        }
+
         $entityManager->remove($book);
         $entityManager->flush();
         return $this->redirectToRoute('book_listing');
-        
     }
 
     #[Route('/book/borrow/{id}', name: 'book_borrow')]
     public function borrow(ManagerRegistry $doctrine, Request $request, int $id): Response
     {
         $entityManager = $doctrine->getManager();
-        $book = $entityManager->getRepository(Books::class)->findOneBy(['id'=>$id]);
-        
+        $book = $entityManager->getRepository(Books::class)->findOneBy(['id' => $id]);
+
         $borrow = new Borrow;
-            $borrow->setDateLoan(new \DateTime("now"));
-            $borrow->setDateRenderedMax(new \DateTime("+15 days"));
-            $borrow->setBooks($book);
+        $borrow->setDateLoan(new \DateTime("now"));
+        $borrow->setDateRenderedMax(new \DateTime("+15 days"));
+        $borrow->setBooks($book);
 
         $form = $this->createFormBuilder($borrow)
-        ->add("Clients", EntityType::class, [
-            "label" => "Emprunteur",
-            "class" => Clients::class,
-            "attr" => ['class' => 'form-control my-4'],
-            "choice_label" => 'lastName',
-        ])
-        ->add('save', SubmitType::class, [
-            'label' => "Valider",
-            "attr" => ["class' => 'btn btn-primary"]
-        ])
-        ->getForm();
+            ->add("Clients", EntityType::class, [
+                "label" => "Emprunteur",
+                "class" => Clients::class,
+                "attr" => ['class' => 'form-control my-4'],
+                "choice_label" => 'lastName',
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => "Valider",
+                "attr" => ["class' => 'btn btn-primary"]
+            ])
+            ->getForm();
 
-        $form -> handleRequest($request);
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $update = $form->getData();
-            
+
             $book->setAvailable(Books::BORROWED);
 
             $borrow->setClients($update->getClients());
@@ -127,8 +130,8 @@ class BookController extends AbstractController
             $entityManager->flush();
 
             return $this->redirectToRoute('book_listing');
-        } 
-        
+        }
+
         return $this->renderForm('book/borrow.html.twig', [
             'form' => $form
         ]);
@@ -140,13 +143,12 @@ class BookController extends AbstractController
 
         $entityManager = $doctrine->getManager();
         $book = $entityManager->getRepository(Books::class)->find($id);
-        $borrow = $entityManager->getRepository(Borrow::class)->find($id);
-        
+        $borrow = $entityManager->getRepository(Borrow::class)->findByDateRendered($id);
 
         $book->setAvailable(Books::AVAILABLE);
-        $borrow->setDateRendered(new \DateTime("now"));
+        $borrow[0]->setDateRendered(new \DateTime("now"));
 
-        $entityManager->persist($book, $borrow);
+        $entityManager->persist($book, $borrow[0]);
         $entityManager->flush();
         return $this->redirectToRoute('book_listing');
     }

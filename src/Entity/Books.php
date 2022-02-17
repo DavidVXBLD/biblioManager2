@@ -111,6 +111,7 @@ class Books
     {
         $this->clients = new \Doctrine\Common\Collections\ArrayCollection();
         $this->borrows = new ArrayCollection();
+        $this->setAvailable(self::AVAILABLE);
     }
 
     /**

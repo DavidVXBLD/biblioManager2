@@ -22,19 +22,18 @@ class BorrowRepository extends ServiceEntityRepository
     // /**
     //  * @return Borrow[] Returns an array of Borrow objects
     //  */
-    /*
-    public function findByExampleField($value)
+    
+    public function findByDateRendered($id)
     {
         return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
+            ->where('b.books = :val')
+            ->andWhere('b.date_rendered IS NULL')
+            ->setParameter('val', $id)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+    
 
     /*
     public function findOneBySomeField($value): ?Borrow

@@ -1,98 +1,117 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{"Book list"}}
+	{{"Book list"}}
 {% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"/>
+	{{ parent() }}
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"/>
 {% endblock %}
 
 {% block body %}
 
-    <style>
-    .example-wrapper {
-        margin: 1em auto;             
-        max-width: 85vw;             
-        width: 95%;             
-        font: 18px / 1.5 sans-serif;         
-        }         
-        
-    .example-wrapper code {             
-        background: #F5F5F5;             
-        padding: 2px 6px;       
-        }     
-    </style>
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 85vw;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
 
-    <div class="example-wrapper">
-        <h2>List of books</h2>
-        <a class="btn btn-primary my-2" href="./create">{{'Create book'}}</a>
-        <table id="myTable" class="display">
-            <thead>
-                <th>{{"Title"}}</th>
-                <th>{{"Author"}}</th>
-                <th>{{"Summary"}}</th>
-                <th>{{"Release Date"}}</th>
-                <th>{{"Category"}}</th>
-                <th>{{"Child Friendly"}}</th>
-                <th>{{"Available"}}</th>
-                <th>{{"Borrower"}}</th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </thead>
-            <tbody>
-                {% for book in books %}
-                <tr>
-                    <td>{{book.getTitle()}}</td>
-                    <td>{{book.getAuthor()}}</td>
-                    <td>{{book.getSummary()}}</td>
-                    <td>{{book.getReleaseDate()|date("d-M-Y","Europe/Paris")}}</td>
-                    <td>{{book.getCategory()}}</td>
-                    <td>{% if book.getForChild() %}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
+
+	<div class="example-wrapper">
+		<h2>List of books</h2>
+		<a class="btn btn-primary my-2" href="./create">{{'Create book'}}</a>
+		<table id="myTable" class="display">
+			<thead>
+				<th>{{"Title"}}</th>
+				<th>{{"Author"}}</th>
+				<th>{{"Summary"}}</th>
+				<th>{{"Release Date"}}</th>
+				<th>{{"Category"}}</th>
+				<th>{{"Child Friendly"}}</th>
+				<th>{{"Available"}}</th>
+				<th>{{"Borrower"}}</th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</thead>
+			<tbody>
+				{% for book in books %}
+					<tr>
+						<td>{{book.getTitle()}}</td>
+						<td>{{book.getAuthor()}}</td>
+						<td>{{book.getSummary()}}</td>
+						<td>{{book.getReleaseDate()|date("d-M-Y","Europe/Paris")}}</td>
+						<td>{{book.getCategory()}}</td>
+						<td>
+							{% if book.getForChild() %}
 								Oui
 							{% else %}
 								Non
-							{% endif %}</td>
-                    <td>{% if book.getAvailable() %}
+							{% endif %}
+						</td>
+						<td>
+							{% if book.getAvailable() %}
 								Non
 							{% else %}
 								Oui
-							{% endif %}</td>
-                    <td>{% if book.getAvailable() %}
+							{% endif %}
+						</td>
+						<td>
+							{% if book.getAvailable() %}
 								{% for borrow in book.getBorrows() %}
-                                    {{borrow.getClients().getLastName()}}
-                                {% endfor %}
+									{% if borrow.getDateRendered() %}
+
+										{% else %}
+											{{borrow.getClients().getLastName()}}
+									{% endif %}
+								{% endfor %}
 							{% else %}
-                                Aucun
-							{% endif %}</td>
-                    <td>{% if book.getAvailable() %}
+								Aucun
+							{% endif %}
+						</td>
+						<td>
+							{% if book.getAvailable() %}
 								<button class="btn btn-primary disabled">{{'Borrow'}}</button>
 							{% else %}
 								<a class="btn btn-primary" href="./borrow/{{book.getId()}}">{{'Borrow'}}</a>
-							{% endif %}</td>
-                    <td><a class="btn btn-success" href="./edit/{{book.getId()}}">{{'Edit'}}</a></td>
-                    <td><a class="btn btn-danger" href="./delete/{{book.getId()}}">{{'Delete'}}</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+							{% endif %}
+						</td>
+						<td>
+							<a class="btn btn-success" href="./edit/{{book.getId()}}">{{'Edit'}}</a>
+						</td>
+						<td>
+							<a class="btn btn-danger" href="./delete/{{book.getId()}}">{{'Delete'}}</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-    <script>
-    $(document).ready(function() {
-        $('#myTable').DataTable({
-            columnsDefs: [
-                { "width": "50%","targets":2 }
-            ],
-            language: {
-            }
-            
-        });
-    } );
-    </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+	<script>
+		$(document).ready(function () {
+$('#myTable').DataTable({
+columnsDefs: [
+{
+"width": "50%",
+"targets": 2
+}
+],
+language: {}
+
+});
+});
+	</script>
 {% endblock %}

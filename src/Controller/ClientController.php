@@ -86,7 +86,7 @@ class ClientController extends AbstractController
             $entityManager->flush();
             return $this->redirectToRoute('client_listing');
         }
-        return $this->renderForm('client/create.html.twig', [
+        return $this->renderForm('client/edit.html.twig', [
             'controller_name' => 'Edit client',
             'form' => $form
         ]);
@@ -97,6 +97,12 @@ class ClientController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $client = $entityManager->getRepository(Clients::class)->find($id);
+
+        $borrow = $entityManager->getRepository(Borrow::class)->findBy(["clients" => $id]);
+        foreach ($borrow as $delete) {
+            $entityManager->remove($delete);
+        }
+
         $entityManager->remove($client);
         $entityManager->flush();
         return $this->redirectToRoute('client_listing');

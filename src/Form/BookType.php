@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class BookType extends AbstractType
 {
@@ -22,7 +23,8 @@ class BookType extends AbstractType
             ->add('release_date',DateType::class, ['widget' => 'single_text'])
             ->add('category',TextType::class,[])
             ->add('for_child',CheckboxType::class,['required' => false])
-        ;
+            ->add("submit",SubmitType::class,["attr" => ["class" => "btn btn-primary"]]);
+        
     }
 
     public function configureOptions(OptionsResolver $resolver): void
